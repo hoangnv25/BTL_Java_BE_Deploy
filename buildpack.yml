@@ -1,0 +1,9 @@
+# Tên file: buildpack.yml
+buildpacks:
+  # Sử dụng Heroku/Java Buildpack để khắc phục lỗi nhận diện Build-dir
+  - name: java
+    buildpack_id: heroku/java
+
+build:
+  # Chỉ định thư mục chứa pom.xml
+  build-dir: BTL

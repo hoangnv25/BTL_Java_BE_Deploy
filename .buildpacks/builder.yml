@@ -1,4 +1,0 @@
-# Nội dung của .buildpacks/builder.yml
-buildpacks:
-  - 'gcr.io/paketo-buildpacks/java-maven'
-  - 'gcr.io/paketo-buildpacks/bellsoft-liberica'
