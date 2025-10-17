@@ -1,14 +1,17 @@
-# Sử dụng base image chính thức của Eclipse Temurin (Java 21)
-FROM eclipse-temurin:21-jdk-jammy AS build
+# SỬ DỤNG IMAGE ĐÃ CÓ MAVEN
+# Image chính thức của Maven đã bao gồm JDK
+FROM maven:3.9.5-eclipse-temurin-21 AS build
 
 # Đặt thư mục làm việc là BTL (nơi có pom.xml)
 WORKDIR /app/BTL
 
 # Sao chép file pom.xml và build các dependency
+# Cấu trúc project của bạn là BTL/pom.xml, nên đường dẫn COPY phải là BTL/pom.xml
 COPY BTL/pom.xml .
 RUN mvn dependency:go-offline
 
 # Sao chép toàn bộ code và thực hiện build Spring Boot
+# Cấu trúc project của bạn là BTL/src, nên đường dẫn COPY phải là BTL/src
 COPY BTL/src src
 RUN mvn package -DskipTests
 
@@ -20,7 +23,7 @@ FROM eclipse-temurin:21-jre-jammy
 ENV PORT 8080
 
 # Sao chép file JAR từ giai đoạn build
-# Lưu ý: Thay BTL-0.0.1-SNAPSHOT.jar bằng tên JAR chính xác của bạn
+# Kiểm tra lại tên file JAR chính xác
 COPY --from=build /app/BTL/target/BTL-0.0.1-SNAPSHOT.jar app.jar
 
 # Lệnh khởi động ứng dụng
