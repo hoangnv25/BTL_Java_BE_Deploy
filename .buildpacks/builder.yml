@@ -1,0 +1,6 @@
+# Tên file: .buildpacks/builder.yml (phải tạo thư mục .buildpacks trước)
+buildpacks:
+  # Buildpack này sẽ tìm pom.xml trong BTL/pom.xml do đã set BUILD_BASE
+  - 'gcr.io/paketo-buildpacks/java-maven'
+  # Buildpack này để chạy ứng dụng đã build
+  - 'gcr.io/paketo-buildpacks/bellsoft-liberica'
