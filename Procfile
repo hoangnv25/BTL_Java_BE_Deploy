@@ -1,1 +1,0 @@
-web: java -Dserver.port=$PORT -jar BTL/target/BTL-0.0.1-SNAPSHOT.jar
