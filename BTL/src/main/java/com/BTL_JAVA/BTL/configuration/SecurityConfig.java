@@ -49,6 +49,16 @@ public class SecurityConfig {
 
         );
 
+        http.cors() // ✅ Bật CORS để cho phép WebConfig hoạt động
+                .and()
+                .oauth2ResourceServer(oauth2 ->
+                        oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(customJwtDecoder)
+                                        .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                                )
+                                .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+                                .accessDeniedHandler(new JwtAccessDeniedHandler())
+                );
+
 
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(request -> request
