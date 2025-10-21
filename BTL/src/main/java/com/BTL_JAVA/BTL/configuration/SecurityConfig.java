@@ -65,17 +65,17 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
+                                "/v3/api-docs.yaml",
                                 "/swagger-resources/**",
                                 "/webjars/**"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/sales").permitAll()
                         .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/sales").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.POST, "/sales").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.PUT, "/sales/**").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/sales/**").hasRole(Role.ADMIN.name())
-                        .requestMatchers("/cart/**").authenticated()
-                        .requestMatchers("/address/**").authenticated()
+                        .requestMatchers("/cart/**", "/address/**").authenticated()
                         .anyRequest().authenticated()
                 );
 //                .httpBasic(Customizer.withDefaults())  // bật Basic Auth
