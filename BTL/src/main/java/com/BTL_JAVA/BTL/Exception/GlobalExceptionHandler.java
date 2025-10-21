@@ -76,7 +76,7 @@ public class GlobalExceptionHandler {
 
          try {
              errorCode = ErrorCode.valueOf(enumKey);
-             var constrainViolation=ex.getBindingResult().getAllErrors().getFirst().unwrap(ConstraintViolation.class);
+             var constrainViolation=ex.getBindingResult().getAllErrors().get(0).unwrap(ConstraintViolation.class);
 
              attributes =constrainViolation.getConstraintDescriptor().getAttributes();
 
