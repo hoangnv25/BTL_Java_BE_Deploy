@@ -22,14 +22,24 @@ public class GlobalExceptionHandler {
     private static final String MAX_ATTRIBUTE = "max";
 
     @ExceptionHandler(value = Exception.class)
-    ResponseEntity<ApiResponse> handleException(Exception ex){
-       ApiResponse response = new ApiResponse<>();
+    ResponseEntity<ApiResponse> handleException(Exception ex) {
+        ApiResponse response = new ApiResponse<>();
+        response.setMessage(ErrorCode.UNCATEGORIED_EXCEPTION.getMessage());
+        response.setCode(ErrorCode.UNCATEGORIED_EXCEPTION.getCode());
 
-       response.setMessage(ErrorCode.UNCATEGORIED_EXCEPTION.getMessage());
-       response.setCode(ErrorCode.UNCATEGORIED_EXCEPTION.getCode());
+        // ✅ Nếu request là /v3/api-docs hoặc swagger thì không chặn
+        try {
+            String path = org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes()
+                    .getAttribute("org.springframework.web.servlet.HandlerMapping.bestMatchingPattern", 0)
+                    .toString();
+            if (path.contains("v3/api-docs") || path.contains("swagger")) {
+                return ResponseEntity.ok().build();
+            }
+        } catch (Exception ignore) {}
 
         return ResponseEntity.badRequest().body(response);
     }
+
 
     @ExceptionHandler(value = AppException.class)
     ResponseEntity<ApiResponse> handleAppExcrptin(AppException ex){

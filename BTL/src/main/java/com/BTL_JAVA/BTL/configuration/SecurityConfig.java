@@ -41,44 +41,43 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http.oauth2ResourceServer(oauth2->
-                oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(customJwtDecoder)
-                                .jwtAuthenticationConverter(jwtAuthenticationConverter())
-                        ).authenticationEntryPoint(new JwtAuthenticationEntryPoint())
-                        .accessDeniedHandler(new JwtAccessDeniedHandler())
-
-        );
-
-        http.cors() // ✅ Bật CORS để cho phép WebConfig hoạt động
-                .and()
-                .oauth2ResourceServer(oauth2 ->
-                        oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(customJwtDecoder)
-                                        .jwtAuthenticationConverter(jwtAuthenticationConverter())
-                                )
-                                .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
-                                .accessDeniedHandler(new JwtAccessDeniedHandler())
-                );
-
-
-        http.csrf(csrf -> csrf.disable())
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(request -> request
+                        // ✅ Swagger & API docs cho phép truy cập công khai
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/v3/api-docs.yaml",
                                 "/swagger-resources/**",
-                                "/webjars/**"
+                                "/webjars/**",
+                                "/swagger-ui.html"
                         ).permitAll()
+
+                        // ✅ Cho phép các API public khác
                         .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.GET, "/sales").permitAll()
+
+                        // ✅ Các API yêu cầu quyền
                         .requestMatchers(HttpMethod.GET, "/users").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.POST, "/sales").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.PUT, "/sales/**").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/sales/**").hasRole(Role.ADMIN.name())
                         .requestMatchers("/cart/**", "/address/**").authenticated()
+
+                        // ✅ Mặc định: các route khác yêu cầu token
                         .anyRequest().authenticated()
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwtConfigurer -> jwtConfigurer
+                                .decoder(customJwtDecoder)
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                        )
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+                        .accessDeniedHandler(new JwtAccessDeniedHandler())
                 );
-//                .httpBasic(Customizer.withDefaults())  // bật Basic Auth
+
         return http.build();
     }
 
